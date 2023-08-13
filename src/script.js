@@ -35,21 +35,13 @@ const loadingBar = document.querySelector('.loading-bar')
 
 const loadingManager = new THREE.LoadingManager()
 loadingManager.onLoad = () => {
-    console.log('loaded')
 
     //delay to allow loading animation to complete
     window.setTimeout(()=>{
         // starts to fade out overlay
         gsap.to(overlayMat.uniforms.uAlpha, {duration: 2, value:0})
-        //overlayMat.wireframe = true
-
-        // delay to remove overlay after animation
-        window.setTimeout(()=>{
-            overlayGeo.dispose()
-            overlayMat.dispose()
-            scene.remove(overlayMesh)
-        },2000)
-
+        
+        overlayMat.depthWrite=false
 
         //removes bar
         loadingBar.style.display= 'none'
@@ -65,11 +57,12 @@ loadingManager.onProgress = (itemUrl,itemsLoaded,itemsTotal) => {
     
 }
 
-//overlay material
+//overlay materials
 
 const overlayGeo = new THREE.PlaneGeometry(2,2,1,1)
 const overlayMat = new THREE.ShaderMaterial({
     transparent:true,
+    depthWrite:true,
     uniforms:{
         uAlpha:{value:1.0},
         uLoadingColor:{value: new THREE.Color(params.portalColorStart)}
@@ -251,6 +244,9 @@ window.addEventListener('resize', () =>
     //update firefleis size
     ffMat.uniforms.uPixelRatio.value = Math.min(window.devicePixelRatio, 2)
 })
+
+
+
 
 /**
  * Camera
