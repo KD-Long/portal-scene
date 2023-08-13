@@ -41,6 +41,11 @@ loadingManager.onLoad = () => {
     window.setTimeout(()=>{
         // starts to fade out overlay
         gsap.to(overlayMat.uniforms.uAlpha, {duration: 2, value:0})
+        //overlayMat.wireframe = true
+        overlayGeo.dispose()
+        overlayMat.dispose()
+        scene.remove(overlayMesh)
+
         //removes bar
         loadingBar.style.display= 'none'
     },1000)
@@ -82,7 +87,7 @@ const overlayMesh = new THREE.Mesh(
     overlayGeo,
     overlayMat
 )
-scene.add(overlayMesh)
+ scene.add(overlayMesh)
 
 /**
  * Loaders
