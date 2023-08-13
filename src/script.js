@@ -9,6 +9,7 @@ import firefliesFragmentShader from './shaders/fireflies/fragment.glsl'
 import portalVertexShader from './shaders/portal/vertex.glsl'
 import portalFragmentShader from './shaders/portal/fragment.glsl'
 
+import {gsap} from 'gsap'
 /**
  * Base
  */
@@ -29,25 +30,76 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
+// Loading bar
+const loadingBar = document.querySelector('.loading-bar')
 
+const loadingManager = new THREE.LoadingManager()
+loadingManager.onLoad = () => {
+    console.log('loaded')
 
+    //delay to allow loading animation to complete
+    window.setTimeout(()=>{
+        // starts to fade out overlay
+        gsap.to(overlayMat.uniforms.uAlpha, {duration: 2, value:0})
+        //removes bar
+        loadingBar.style.display= 'none'
+    },1000)
+    
+    
+}
+loadingManager.onProgress = (itemUrl,itemsLoaded,itemsTotal) => {
+    const percentage = itemsLoaded/itemsTotal
+    
+    loadingBar.style.transform = `scaleX(${percentage})`
+    
+}
+
+//overlay material
+
+const overlayGeo = new THREE.PlaneGeometry(2,2,1,1)
+const overlayMat = new THREE.ShaderMaterial({
+    transparent:true,
+    uniforms:{
+        uAlpha:{value:1.0},
+        uLoadingColor:{value: new THREE.Color(params.portalColorStart)}
+    },
+    vertexShader:
+    `
+    void main(){
+        gl_Position = vec4(position, 1.0);
+    }
+    `,
+    fragmentShader:
+    `
+    uniform vec3 uLoadingColor;
+    uniform float uAlpha;
+    void main(){
+        gl_FragColor = vec4(uLoadingColor, uAlpha);
+    }
+    `
+})
+const overlayMesh = new THREE.Mesh(
+    overlayGeo,
+    overlayMat
+)
+scene.add(overlayMesh)
 
 /**
  * Loaders
  */
 // Texture loader
-const textureLoader = new THREE.TextureLoader()
+const textureLoader = new THREE.TextureLoader(loadingManager)
 
 const bakedTexture = textureLoader.load('baked.jpg')
 bakedTexture.flipY = false
 bakedTexture.colorSpace = THREE.SRGBColorSpace
 
 // Draco loader
-const dracoLoader = new DRACOLoader()
+const dracoLoader = new DRACOLoader(loadingManager)
 dracoLoader.setDecoderPath('draco/')
 
 // GLTF loader
-const gltfLoader = new GLTFLoader()
+const gltfLoader = new GLTFLoader(loadingManager)
 
 gltfLoader.load('my_portal.glb',
     (gltf) =>{
@@ -156,6 +208,12 @@ const portalLightMaterial = new THREE.ShaderMaterial({
     }
 }
 )
+//Fog
+const fog = new THREE.Fog(0x262837,3,10)
+scene.fog = fog
+
+// const helper = new THREE.AxesHelper(2)
+// scene.add(helper)
 
 /**
  * Sizes

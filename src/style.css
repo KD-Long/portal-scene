@@ -17,3 +17,13 @@ body
     left: 0;
     outline: none;
 }
+.loading-bar
+{
+    position:absolute;
+    top: 50%;
+    width: 100%;
+    height: 3px;
+    background: #ffffff;
+    transform: scaleX(0.0);
+    transition: transform 1.0s;
+}
