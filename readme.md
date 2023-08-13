@@ -3,6 +3,10 @@
 This particles project was built in the progress of the [Three.js journey](https://threejs-journey.com) course, focusing on blender models, baking, vertex/fragment shader particle effects.
 <br>
 
+![Portal-scene-image](static/repo_image.png)
+
+
+
 ## Tech
 
 |                |               |
