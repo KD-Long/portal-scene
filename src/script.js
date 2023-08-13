@@ -42,13 +42,19 @@ loadingManager.onLoad = () => {
         // starts to fade out overlay
         gsap.to(overlayMat.uniforms.uAlpha, {duration: 2, value:0})
         //overlayMat.wireframe = true
-        overlayGeo.dispose()
-        overlayMat.dispose()
-        scene.remove(overlayMesh)
+
+        // delay to remove overlay after animation
+        window.setTimeout(()=>{
+            overlayGeo.dispose()
+            overlayMat.dispose()
+            scene.remove(overlayMesh)
+        },2000)
+
 
         //removes bar
         loadingBar.style.display= 'none'
     },1000)
+
     
     
 }
